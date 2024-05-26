@@ -24,11 +24,14 @@ def generate_launch_description():
         'config',
         'params.yaml'
     )
-    return LaunchDescription([       
+
+    params_file = LaunchConfiguration('params_file')
+
+    return LaunchDescription([
         launch_ros.actions.Node(
             package='ros2_laser_scan_merger',
             executable='ros2_laser_scan_merger',
-            parameters=[config],
+            parameters=[params_file],
             output='screen',
             respawn=True,
             respawn_delay=2,
@@ -50,7 +53,7 @@ def generate_launch_description():
             name='pointcloud_to_laserscan',
             package='pointcloud_to_laserscan',
             executable='pointcloud_to_laserscan_node',
-            parameters=[config]
+            parameters=[params_file]
         ),
         launch_ros.actions.Node(
             package='rviz2',
@@ -58,6 +61,12 @@ def generate_launch_description():
             name='rviz2',
             arguments=['-d', rviz_config_dir],
             output='screen'
-        )
+        ),
+
+        DeclareLaunchArgument(
+            'params_file',
+            default_value=config,
+            description='Full path to the ROS2 parameters file to use for all launched nodes'
+        ),
     ])
 
